@@ -1,26 +1,38 @@
-import re
+import sys
+from sys import argv
 import requests as req
 import validators
 
-def check_link(link:str):
-    # link_ref = "^((ftp|http|https):\/\/)(www\.)?([A-Za-zА-Яа-я0-9]{1}[A-Za-zА-Яа-я0-9\-]*\.?)*\.{1}[A-Za-zА-Яа-я0-9-]{2,8}(\/([\w#!:.?+=&%@!\-\/])*)?"
-    #
-    # if re.match(link_ref, link) is not None:
-    #     return True
-    # else:
-    #     return False
-    return validators.url(link)
 
+http_methods_list = ['get', 'head', 'post', 'put', 'delete', 'options', 'trace', 'patch']
 def link_dict(link_list):
     link_dict = {}
     for link in link_list:
         method_dict = {}
-        if check_link(link):
-            if  (req.get(linka).status_code) != 405:
-                method_dict['get'] = req.get(link).status_code
-            elif (req.post(link).status_code) != 405:
-                method_dict['post'] = req.post(link).status_code
-            link_dict[link] = method_dict
+        if validators.url(link):
+                _get = req.get(link, timeout=1).status_code
+                _head = req.head(link, timeout=1).status_code
+                _post = req.post(link, timeout=1).status_code
+                _put = req.put(link, timeout=1).status_code
+                _delete = req.delete(link, timeout=1).status_code
+                _options = req.options(link, timeout=1).status_code
+                _patch = req.patch(link, timeout=1).status_code
+                if _get != 405:
+                    method_dict['GET'] = _get
+                if _head != 405:
+                    method_dict['HEAD'] = _head
+                if _post != 405:
+                    method_dict['POST'] = _post
+                if _put != 405:
+                    method_dict['PUT'] = _put
+                if _delete != 405:
+                    method_dict['DELETE'] = _delete
+                if _options != 405:
+                    method_dict['OPTIONS'] = _options
+                if _patch != 405:
+                    method_dict['PATCH'] = _patch
+
+                link_dict[link] = method_dict
         else:
             print(f'Строка {link} не является ссылкой')
 
@@ -32,11 +44,6 @@ def link_dict(link_list):
 
 
 if __name__ == '__main__':
-    link_list = []
-    while True:
-        elem = input('Введите строку...')
-        if bool(elem) == True:
-            link_list.append(elem)
-        else:
-            break
-    print(check_link(link_list))
+    link_list = sys.argv[1:]
+
+    print(link_dict(link_list))
