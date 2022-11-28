@@ -1,8 +1,7 @@
 import sys
-from sys import argv
 import requests as req
 import validators
-
+import json
 
 http_methods_list = ['get', 'head', 'post', 'put', 'delete', 'options', 'trace', 'patch']
 def link_dict(link_list):
@@ -46,4 +45,4 @@ def link_dict(link_list):
 if __name__ == '__main__':
     link_list = sys.argv[1:]
 
-    print(link_dict(link_list))
+    print(json.dumps(link_dict(link_list)))
